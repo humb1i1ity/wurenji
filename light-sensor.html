@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光敏传感器监测系统</title>
+    <link rel="stylesheet" href="light-sensor.css">
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>光敏传感器监测系统</h1>
+            <div class="header-info">
+                <div class="status-indicator">
+                    <span id="connection-status" class="status-connected">已连接</span>
+                </div>
+                <div id="current-time"></div>
+            </div>
+        </header>
+
+        <main>
+            <!-- 传感器数据显示 -->
+            <section class="sensor-section">
+                <div class="section-header">
+                    <h2>实时数据监测</h2>
+                </div>
+                <div class="sensor-display">
+                    <div class="sensor-item">
+                        <div class="sensor-label">当前光照值</div>
+                        <div class="sensor-value" id="current-light">0</div>
+                        <div class="light-bar">
+                            <div class="light-level" id="light-level"></div>
+                        </div>
+                    </div>
+                    <div class="sensor-item">
+                        <div class="sensor-label">设定阈值</div>
+                        <div class="threshold-control">
+                            <input type="range" id="threshold-slider" min="0" max="100" value="50">
+                            <input type="number" id="threshold-input" min="0" max="100" value="50">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 警报记录 -->
+            <section class="alerts-section">
+                <div class="section-header">
+                    <h2>警报记录</h2>
+                    <span class="count" id="alert-count">0</span>
+                </div>
+                <div class="alert-list" id="alert-list">
+                    <div class="no-alerts">暂无警报记录</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 警报模态框 -->
+        <div id="alert-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>⚠️ 光照警报</h3>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div id="modal-alert-content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="modal-ok-btn">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="light-sensor.js"></script>
+</body>
+</html>
