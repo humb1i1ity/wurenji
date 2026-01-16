@@ -1,0 +1,986 @@
+/* 全局样式 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f8f9fa;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 标题样式 */
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+h2 {
+    color: #34495e;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+    font-size: 20px;
+}
+
+/* 示例账号信息 */
+.sample-info {
+    max-width: 400px;
+    margin: 0 auto 30px;
+    background: #e8f4f8;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #3498db;
+}
+
+.sample-info h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.sample-accounts {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.sample-account {
+    flex: 1;
+    background: #fff;
+    padding: 15px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sample-account h4 {
+    color: #3498db;
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.sample-account p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #555;
+}
+
+/* 认证容器 */
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-form {
+    margin-bottom: 20px;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+button {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: linear-gradient(135deg, #2980b9, #1f618d);
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+    background: linear-gradient(135deg, #1f618d, #154360);
+}
+
+/* 顶部用户信息 */
+.user-info {
+    text-align: right;
+    margin-bottom: 30px;
+}
+
+.user-profile {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 25px;
+    padding: 5px 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.user-profile span {
+    margin-right: 15px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.user-profile button {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 20px;
+}
+
+.user-profile button:hover {
+    background: linear-gradient(135deg, #c0392b, #a93226);
+}
+
+/* 取餐方式切换 */
+.pickup-type {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.pickup-btn {
+    padding: 10px 20px;
+    border: 2px solid #e9ecef;
+    background: #fff;
+    color: #6c757d;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.pickup-btn:hover {
+    border-color: #3498db;
+    color: #3498db;
+    transform: translateY(-1px);
+}
+
+.pickup-btn.active {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-color: #3498db;
+    color: #fff;
+}
+
+/* 菜品分类筛选 */
+.category-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    overflow-x: auto;
+    padding-bottom: 10px;
+}
+
+.category-filter::-webkit-scrollbar {
+    height: 4px;
+}
+
+.category-filter::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.category-filter::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+}
+
+.category-filter::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1;
+}
+
+.category-btn {
+    padding: 8px 16px;
+    border: 1px solid #e9ecef;
+    background: #fff;
+    color: #6c757d;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.category-btn:hover {
+    border-color: #3498db;
+    color: #3498db;
+}
+
+.category-btn.active {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-color: #3498db;
+    color: #fff;
+}
+
+/* 导航样式 */
+nav {
+    background-color: #2c3e50;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    position: relative;
+}
+
+nav ul li {
+    margin: 0;
+    position: relative;
+}
+
+nav ul li a {
+    display: block;
+    padding: 15px 25px;
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+nav ul li a:hover {
+    background-color: rgba(52, 73, 94, 0.5);
+}
+
+nav ul li a.active {
+    background-color: transparent;
+    font-weight: bold;
+}
+
+nav ul li a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #3498db, #9b59b6);
+    border-radius: 3px 3px 0 0;
+    z-index: 2;
+}
+
+/* 内容区域 */
+.content-section {
+    display: none;
+    background: #fff;
+    padding: 24px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 20px;
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* 商品列表 */
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+/* 商品卡片 */
+.product-item {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* 菜品图片占位区 */
+.product-image {
+    height: 120px;
+    background: linear-gradient(135deg, #f0f4f8, #e2e8f0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #cbd5e0;
+}
+
+/* 商品信息 */
+.product-info {
+    padding: 16px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-item h3 {
+    margin-bottom: 8px;
+    color: #2c3e50;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.product-item p {
+    margin-bottom: 12px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 1.4;
+    flex-grow: 1;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #e74c3c;
+    margin-bottom: 12px;
+}
+
+/* 下单按钮 */
+.order-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.order-btn:hover {
+    background: linear-gradient(135deg, #229954, #1e8449);
+    transform: translateY(-1px);
+}
+
+.order-btn:active {
+    transform: translateY(0);
+    background: linear-gradient(135deg, #1e8449, #196f3d);
+}
+
+.product-status {
+    margin-bottom: 12px;
+    color: #27ae60;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+/* 订单列表 */
+.order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-item {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-id {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.order-status {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.order-time {
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.order-info {
+    margin-bottom: 20px;
+}
+
+.order-info p {
+    margin-bottom: 10px;
+}
+
+.order-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.order-actions select {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* 订单详情 */
+.order-detail-btn {
+    background: linear-gradient(135deg, #27ae60, #229954);
+}
+
+.order-detail-btn:hover {
+    background: linear-gradient(135deg, #229954, #1e8449);
+}
+
+/* 个人信息 */
+.profile-info {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.profile-info p {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.profile-info strong {
+    color: #2c3e50;
+    margin-right: 10px;
+}
+
+/* 消息容器样式 */
+.message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.message {
+    background: #fff;
+    padding: 15px 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-width: 300px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.message-success {
+    border-left: 4px solid #27ae60;
+    background-color: #e8f5e8;
+}
+
+.message-info {
+    border-left: 4px solid #3498db;
+    background-color: #e8f4f8;
+}
+
+.message-warning {
+    border-left: 4px solid #f39c12;
+    background-color: #fff3cd;
+}
+
+.message-error {
+    border-left: 4px solid #e74c3c;
+    background-color: #fdecea;
+}
+
+.message-content {
+    flex: 1;
+    margin-right: 15px;
+}
+
+.message-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #7f8c8d;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.message-close:hover {
+    color: #2c3e50;
+}
+
+/* 无人机监测面板样式 */
+.drone-monitoring-panel {
+    background: #ffffff;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    margin-top: 30px;
+}
+
+.drone-monitoring-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.drone-monitoring-header h3 {
+    color: #2c3e50;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+    position: relative;
+    display: inline-block;
+}
+
+.drone-monitoring-header h3::after {
+    content: '';
+    position: absolute;
+    bottom: -13px;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #165DFF, #536DFE);
+    border-radius: 3px;
+}
+
+.refresh-time {
+    font-size: 12px;
+    color: #86909C;
+}
+
+/* 网格布局 */
+.monitoring-content.grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+/* 监测模块 */
+.monitoring-module {
+    background: #ffffff;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.monitoring-module:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.module-title {
+    background: #f8f9fa;
+    color: #165DFF;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.module-content {
+    padding: 16px;
+}
+
+/* 订单编号 */
+.order-id-section {
+    margin-bottom: 12px;
+}
+
+.badge-primary {
+    display: inline-block;
+    background: rgba(22, 93, 255, 0.1);
+    color: #165DFF;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+/* 信息行 */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.label {
+    font-size: 12px;
+    color: #86909C;
+}
+
+.value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #2C3E50;
+}
+
+/* 信息组 */
+.info-group {
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-group:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.group-title {
+    font-size: 12px;
+    color: #86909C;
+    margin-bottom: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 状态标签 */
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-delivering {
+    background: rgba(22, 93, 255, 0.1);
+    color: #165DFF;
+}
+
+.status-completed {
+    background: rgba(0, 180, 42, 0.1);
+    color: #00B42A;
+}
+
+.status-pending {
+    background: rgba(243, 156, 18, 0.1);
+    color: #F39C12;
+}
+
+.status-cancelled {
+    background: rgba(255, 77, 79, 0.1);
+    color: #FF4D4F;
+}
+
+.status-normal {
+    background: rgba(0, 180, 42, 0.1);
+    color: #00B42A;
+}
+
+.status-idle {
+    background: rgba(134, 144, 156, 0.1);
+    color: #86909C;
+}
+
+/* 倒计时 */
+.countdown {
+    font-size: 18px;
+    font-weight: bold;
+    color: #165DFF;
+}
+
+/* 地图模块 */
+.map-module {
+    grid-column: span 2;
+}
+
+.map-container {
+    height: 300px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.map-loading,
+.map-empty {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #86909C;
+    font-size: 14px;
+    z-index: 100;
+}
+
+/* 光敏传感器模块 */
+#lightSensorModule {
+    transition: all 0.3s ease;
+}
+
+#lightSensorModule.warning {
+    border-color: #FF7D00;
+    box-shadow: 0 0 0 2px rgba(255, 125, 0, 0.1);
+    animation: pulse 1.5s infinite;
+}
+
+#lightSensorModule.error {
+    border-color: #FF4D4F;
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.1);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+    50% {
+        box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.1);
+    }
+}
+
+/* 标记样式 */
+.drone-marker-content {
+    font-size: 24px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.destination-marker-content {
+    font-size: 20px;
+}
+
+/* 弹窗样式 */
+.popup-content {
+    position: relative;
+    padding-right: 24px;
+}
+
+.popup-close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #FF4D4F;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .monitoring-content.grid-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .map-module {
+        grid-column: span 1;
+    }
+    
+    .drone-monitoring-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .drone-monitoring-header h3::after {
+        bottom: -12px;
+    }
+}
+
+/* 加载状态 */
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #64748b;
+}
+
+.loading-spinner {
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 空数据提示 */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #64748b;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    font-size: 16px;
+    margin: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    nav ul {
+        flex-direction: column;
+    }
+    
+    .order-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .order-actions {
+        flex-direction: column;
+    }
+    
+    .order-actions select {
+        width: 100%;
+    }
+    
+    .monitoring-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .message {
+        min-width: auto;
+        width: calc(100vw - 40px);
+    }
+    
+    .product-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 20px;
+    }
+    
+    .content-section {
+        padding: 20px;
+    }
+    
+    .product-list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .sample-accounts {
+        flex-direction: column;
+    }
+    
+    .pickup-type {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .pickup-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}

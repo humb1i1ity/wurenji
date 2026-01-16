@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无人机外卖平台</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>无人机外卖平台</h1>
+        
+        <div class="sample-info">
+            <h3>示例账号</h3>
+            <div class="sample-accounts">
+                <div class="sample-account">
+                    <h4>普通用户</h4>
+                    <p>用户名：user1</p>
+                    <p>密码：password1</p>
+                </div>
+                <div class="sample-account">
+                    <h4>商家用户</h4>
+                    <p>用户名：merchant1</p>
+                    <p>密码：password1</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="auth-container">
+            <!-- 登录表单 -->
+            <div class="auth-form" id="loginForm">
+                <h2>登录</h2>
+                <form id="login">
+                    <div class="form-group">
+                        <label for="loginUsername">用户名</label>
+                        <input type="text" id="loginUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">密码</label>
+                        <input type="password" id="loginPassword" name="password" required>
+                    </div>
+                    <button type="submit">登录</button>
+                </form>
+                <p>还没有账号？<a href="#" id="showRegister">注册</a></p>
+            </div>
+            
+            <!-- 注册表单 -->
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <h2>注册</h2>
+                <form id="register">
+                    <div class="form-group">
+                        <label for="registerUsername">用户名</label>
+                        <input type="text" id="registerUsername" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">密码</label>
+                        <input type="password" id="registerPassword" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerName">姓名</label>
+                        <input type="text" id="registerName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPhone">电话</label>
+                        <input type="tel" id="registerPhone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerAddress">地址</label>
+                        <input type="text" id="registerAddress" name="address" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerRole">角色</label>
+                        <select id="registerRole" name="role">
+                            <option value="user">用户</option>
+                            <option value="merchant">商家</option>
+                        </select>
+                    </div>
+                    <button type="submit">注册</button>
+                </form>
+                <p>已有账号？<a href="#" id="showLogin">登录</a></p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换登录和注册表单
+        document.getElementById('showRegister').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        });
+        
+        document.getElementById('showLogin').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+        });
+        
+        // 登录表单提交
+        document.getElementById('login').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            // 离线模拟功能
+            const offlineMode = true;
+            
+            if (offlineMode) {
+                // 模拟登录成功
+                let user;
+                if (data.username === 'user1' && data.password === 'password1') {
+                    user = {
+                        id: 'US001',
+                        username: 'user1',
+                        password: 'password1',
+                        name: '张三',
+                        phone: '13800138001',
+                        address: '北京市朝阳区建国路1号',
+                        position: { lat: 39.9088, lng: 116.4044 },
+                        role: 'user',
+                        createdAt: new Date().toISOString()
+                    };
+                } else if (data.username === 'merchant1' && data.password === 'password1') {
+                    user = {
+                        id: 'US002',
+                        username: 'merchant1',
+                        password: 'password1',
+                        name: '李四',
+                        phone: '13900139001',
+                        address: '北京市海淀区中关村大街1号',
+                        position: { lat: 39.9834, lng: 116.3159 },
+                        role: 'merchant',
+                        createdAt: new Date().toISOString()
+                    };
+                } else {
+                    alert('登录失败：用户名或密码错误');
+                    return;
+                }
+                
+                // 保存用户信息到localStorage
+                localStorage.setItem('user', JSON.stringify(user));
+                localStorage.setItem('offlineMode', 'true');
+                
+                // 根据角色跳转到不同页面
+                if (user.role === 'merchant') {
+                    window.location.href = 'merchant.html';
+                } else {
+                    window.location.href = 'user.html';
+                }
+            } else {
+                // 正常登录逻辑
+                fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('服务器响应错误');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.success) {
+                        // 保存用户信息到localStorage
+                        localStorage.setItem('user', JSON.stringify(result.user));
+                        localStorage.setItem('offlineMode', 'false');
+                        // 根据角色跳转到不同页面
+                        if (result.user.role === 'merchant') {
+                            window.location.href = 'merchant.html';
+                        } else {
+                            window.location.href = 'user.html';
+                        }
+                    } else {
+                        alert('登录失败：' + result.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('登录错误：', error);
+                    alert('登录失败，服务器可能未启动。请确保Node.js已安装并运行server.js文件，或使用示例账号进行离线体验。');
+                });
+            }
+        });
+        
+        // 注册表单提交
+        document.getElementById('register').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    alert('注册成功！请登录');
+                    document.getElementById('registerForm').style.display = 'none';
+                    document.getElementById('loginForm').style.display = 'block';
+                } else {
+                    alert('注册失败：' + result.error);
+                }
+            })
+            .catch(error => {
+                console.error('注册错误：', error);
+                alert('注册失败，请稍后重试');
+            });
+        });
+    </script>
+</body>
+</html>

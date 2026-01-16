@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>商家中心 - 无人机外卖平台</title>
+        <link rel="stylesheet" href="styles.css">
+        <!-- 引入Leaflet地图库 -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    </head>
+<body>
+    <div class="container">
+        <header>
+            <h1>商家中心</h1>
+            <div class="user-info">
+                <span id="merchantName"></span>
+                <button id="logout">退出登录</button>
+            </div>
+        </header>
+        
+        <nav>
+            <ul>
+                <li><a href="#orders" class="nav-link active">订单管理</a></li>
+                <li><a href="#products" class="nav-link">商品管理</a></li>
+                <li><a href="#add-product" class="nav-link">添加商品</a></li>
+                <li><a href="#profile" class="nav-link">商家信息</a></li>
+            </ul>
+        </nav>
+        
+        <main>
+            <!-- 订单管理 -->
+            <section id="orders" class="content-section active">
+                <h2>订单管理</h2>
+                <div class="order-list" id="orderList">
+                    <!-- 订单将通过JavaScript动态加载 -->
+                </div>
+            </section>
+            
+            <!-- 商品管理 -->
+            <section id="products" class="content-section">
+                <h2>商品管理</h2>
+                <div class="product-list" id="productList">
+                    <!-- 商品将通过JavaScript动态加载 -->
+                </div>
+            </section>
+            
+            <!-- 添加商品 -->
+            <section id="add-product" class="content-section">
+                <h2>添加商品</h2>
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label for="productName">商品名称</label>
+                        <input type="text" id="productName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productDescription">商品描述</label>
+                        <textarea id="productDescription" name="description" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">商品价格</label>
+                        <input type="number" id="productPrice" name="price" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productImage">商品图片</label>
+                        <input type="text" id="productImage" name="image">
+                    </div>
+                    <button type="submit">添加商品</button>
+                </form>
+            </section>
+            
+            <!-- 商家信息 -->
+            <section id="profile" class="content-section">
+                <h2>商家信息</h2>
+                <div class="profile-info" id="profileInfo">
+                    <!-- 商家信息将通过JavaScript动态加载 -->
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // 检查用户是否登录
+        const user = JSON.parse(localStorage.getItem('user'));
+        const offlineMode = localStorage.getItem('offlineMode') === 'true';
+        
+        if (!user || user.role !== 'merchant') {
+            window.location.href = 'index.html';
+        }
+        
+        // 显示商家名称
+        document.getElementById('merchantName').textContent = user.name;
+        
+        // 退出登录
+        document.getElementById('logout').addEventListener('click', function() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('offlineMode');
+            window.location.href = 'index.html';
+        });
+        
+        // 离线数据模拟
+        const mockData = {
+            orders: [
+                {
+                    id: 'OR001',
+                    userId: 'US001',
+                    merchantId: 'ME001',
+                    totalPrice: 53.00,
+                    status: 'delivering',
+                    deliveryAddress: '北京市朝阳区建国路1号',
+                    deliveryPosition: { lat: 39.9088, lng: 116.4044 },
+                    paymentMethod: 'online',
+                    paymentStatus: 'completed',
+                    estimatedDeliveryTime: Date.now() + 300000,
+                    actualDeliveryTime: null,
+                    mealStatus: 'completed',
+                    mealReadyTime: Date.now(),
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                }
+            ],
+            products: [
+                { id: 'PR001', merchantId: 'ME001', name: '宫保鸡丁', description: '传统川菜，鸡肉鲜嫩，花生香脆', price: 28.00, image: '', status: 'active' },
+                { id: 'PR002', merchantId: 'ME001', name: '鱼香肉丝', description: '经典川菜，酸甜可口，香气四溢', price: 25.00, image: '', status: 'active' }
+            ],
+            drones: [
+                { id: 'DR001', name: '配送无人机1号', status: 'delivering', position: { lat: 39.9288, lng: 116.3944 }, battery: 85, capacity: 10 }
+            ]
+        };
+        
+        // 模拟WebSocket
+        const mockSocket = {
+            on: function(event, callback) {
+                if (event === 'light-data') {
+                    // 模拟光敏数据更新
+                    setInterval(() => {
+                        callback({ light: Math.floor(Math.random() * 100), threshold: 50 });
+                    }, 2000);
+                } else if (event === 'order-update') {
+                    // 模拟订单更新
+                    setInterval(() => {
+                        callback(mockData.orders[0]);
+                    }, 5000);
+                }
+            }
+        };
+        
+        // 导航切换
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // 移除所有激活状态
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+                
+                // 添加当前激活状态
+                this.classList.add('active');
+                const targetId = this.getAttribute('href').substring(1);
+                document.getElementById(targetId).classList.add('active');
+                
+                // 加载对应内容
+                if (targetId === 'orders') {
+                    loadOrders();
+                } else if (targetId === 'products') {
+                    loadProducts();
+                } else if (targetId === 'profile') {
+                    loadProfile();
+                }
+            });
+        });
+        
+        // 加载订单列表
+        function loadOrders() {
+            if (offlineMode) {
+                // 使用模拟数据
+                const orders = mockData.orders;
+                const orderList = document.getElementById('orderList');
+                orderList.innerHTML = '';
+                
+                orders.forEach(order => {
+                    const orderItem = document.createElement('div');
+                    orderItem.className = 'order-item';
+                    orderItem.innerHTML = `
+                        <div class="order-header">
+                            <span class="order-id">订单号：${order.id}</span>
+                            <span class="order-status">状态：${getStatusText(order.status)}</span>
+                            <span class="order-time">时间：${new Date(order.createdAt).toLocaleString()}</span>
+                        </div>
+                        <div class="order-info">
+                            <p>总金额：¥${order.totalPrice.toFixed(2)}</p>
+                            <p>配送地址：${order.deliveryAddress}</p>
+                            <p>出餐状态：${getMealStatusText(order.mealStatus)}</p>
+                        </div>
+                        <div class="order-actions">
+                            <select class="meal-status-select" data-order-id="${order.id}" onchange="updateMealStatus(this)">
+                                <option value="not_started" ${order.mealStatus === 'not_started' ? 'selected' : ''}>未开始</option>
+                                <option value="in_progress" ${order.mealStatus === 'in_progress' ? 'selected' : ''}>制作中</option>
+                                <option value="completed" ${order.mealStatus === 'completed' ? 'selected' : ''}>已完成</option>
+                            </select>
+                            <select class="order-status-select" data-order-id="${order.id}" onchange="updateOrderStatus(this)">
+                                <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>待处理</option>
+                                <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>处理中</option>
+                                <option value="delivering" ${order.status === 'delivering' ? 'selected' : ''}>配送中</option>
+                                <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>已送达</option>
+                                <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>已取消</option>
+                            </select>
+                        </div>
+                    `;
+                    orderList.appendChild(orderItem);
+                });
+            } else {
+                // 正常加载订单
+                fetch('/api/merchant/orders', {
+                    headers: {
+                        'user-id': user.id
+                    }
+                })
+                .then(response => response.json())
+                .then(orders => {
+                    const orderList = document.getElementById('orderList');
+                    orderList.innerHTML = '';
+                    
+                    orders.forEach(order => {
+                        const orderItem = document.createElement('div');
+                        orderItem.className = 'order-item';
+                        orderItem.innerHTML = `
+                            <div class="order-header">
+                                <span class="order-id">订单号：${order.id}</span>
+                                <span class="order-status">状态：${getStatusText(order.status)}</span>
+                                <span class="order-time">时间：${new Date(order.createdAt).toLocaleString()}</span>
+                            </div>
+                            <div class="order-info">
+                                <p>总金额：¥${order.totalPrice.toFixed(2)}</p>
+                                <p>配送地址：${order.deliveryAddress}</p>
+                                <p>出餐状态：${getMealStatusText(order.mealStatus)}</p>
+                            </div>
+                            <div class="order-actions">
+                                <select class="meal-status-select" data-order-id="${order.id}" onchange="updateMealStatus(this)">
+                                    <option value="not_started" ${order.mealStatus === 'not_started' ? 'selected' : ''}>未开始</option>
+                                    <option value="in_progress" ${order.mealStatus === 'in_progress' ? 'selected' : ''}>制作中</option>
+                                    <option value="completed" ${order.mealStatus === 'completed' ? 'selected' : ''}>已完成</option>
+                                </select>
+                                <select class="order-status-select" data-order-id="${order.id}" onchange="updateOrderStatus(this)">
+                                    <option value="pending" ${order.status === 'pending' ? 'selected' : ''}>待处理</option>
+                                    <option value="processing" ${order.status === 'processing' ? 'selected' : ''}>处理中</option>
+                                    <option value="delivering" ${order.status === 'delivering' ? 'selected' : ''}>配送中</option>
+                                    <option value="delivered" ${order.status === 'delivered' ? 'selected' : ''}>已送达</option>
+                                    <option value="cancelled" ${order.status === 'cancelled' ? 'selected' : ''}>已取消</option>
+                                </select>
+                            </div>
+                        `;
+                        orderList.appendChild(orderItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载订单失败：', error);
+                    alert('加载订单失败，请稍后重试');
+                });
+            }
+        }
+        
+        // 更新出餐状态
+        function updateMealStatus(select) {
+            const orderId = select.getAttribute('data-order-id');
+            const mealStatus = select.value;
+            
+            if (offlineMode) {
+                // 离线模式下，模拟更新出餐状态
+                alert('离线模式下，出餐状态已更新！');
+                loadOrders();
+            } else {
+                fetch(`/api/orders/${orderId}/meal-status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'user-id': user.id
+                    },
+                    body: JSON.stringify({ mealStatus })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    alert('出餐状态更新成功！');
+                    loadOrders();
+                })
+                .catch(error => {
+                    console.error('更新出餐状态失败：', error);
+                    alert('更新出餐状态失败，请稍后重试');
+                });
+            }
+        }
+        
+        // 更新订单状态
+        function updateOrderStatus(select) {
+            const orderId = select.getAttribute('data-order-id');
+            const status = select.value;
+            
+            if (offlineMode) {
+                // 离线模式下，模拟更新订单状态
+                alert('离线模式下，订单状态已更新！');
+                loadOrders();
+            } else {
+                fetch(`/api/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'user-id': user.id
+                    },
+                    body: JSON.stringify({ status })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    alert('订单状态更新成功！');
+                    loadOrders();
+                })
+                .catch(error => {
+                    console.error('更新订单状态失败：', error);
+                    alert('更新订单状态失败，请稍后重试');
+                });
+            }
+        }
+        
+        // 加载商品列表
+        function loadProducts() {
+            if (offlineMode) {
+                // 使用模拟数据
+                const products = mockData.products;
+                const productList = document.getElementById('productList');
+                productList.innerHTML = '';
+                
+                products.forEach(product => {
+                    const productItem = document.createElement('div');
+                    productItem.className = 'product-item';
+                    productItem.innerHTML = `
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        <div class="product-price">¥${product.price.toFixed(2)}</div>
+                        <div class="product-status">状态：${product.status === 'active' ? '在售' : '下架'}</div>
+                    `;
+                    productList.appendChild(productItem);
+                });
+            } else {
+                // 正常加载商品
+                fetch('/api/merchant/products', {
+                    headers: {
+                        'user-id': user.id
+                    }
+                })
+                .then(response => response.json())
+                .then(products => {
+                    const productList = document.getElementById('productList');
+                    productList.innerHTML = '';
+                    
+                    products.forEach(product => {
+                        const productItem = document.createElement('div');
+                        productItem.className = 'product-item';
+                        productItem.innerHTML = `
+                            <h3>${product.name}</h3>
+                            <p>${product.description}</p>
+                            <div class="product-price">¥${product.price.toFixed(2)}</div>
+                            <div class="product-status">状态：${product.status === 'active' ? '在售' : '下架'}</div>
+                        `;
+                        productList.appendChild(productItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('加载商品失败：', error);
+                    alert('加载商品失败，请稍后重试');
+                });
+            }
+        }
+        
+        // 添加商品表单提交
+        document.getElementById('addProductForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const product = Object.fromEntries(formData);
+            product.price = parseFloat(product.price);
+            
+            if (offlineMode) {
+                // 离线模式下，模拟添加商品
+                alert('离线模式下，商品已添加！');
+                this.reset();
+                loadProducts();
+            } else {
+                fetch('/api/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'user-id': user.id
+                    },
+                    body: JSON.stringify(product)
+                })
+                .then(response => response.json())
+                .then(result => {
+                    alert('商品添加成功！');
+                    this.reset();
+                    loadProducts();
+                })
+                .catch(error => {
+                    console.error('添加商品失败：', error);
+                    alert('添加商品失败，请稍后重试');
+                });
+            }
+        });
+        
+        // 加载商家信息
+        function loadProfile() {
+            if (offlineMode) {
+                // 使用本地用户数据
+                const merchantInfo = user;
+                const profileInfo = document.getElementById('profileInfo');
+                profileInfo.innerHTML = `
+                    <p><strong>商家名称：</strong>${merchantInfo.name}</p>
+                    <p><strong>电话：</strong>${merchantInfo.phone}</p>
+                    <p><strong>地址：</strong>${merchantInfo.address}</p>
+                    <p><strong>状态：</strong>营业中</p>
+                    <p><strong>注册时间：</strong>${new Date(merchantInfo.createdAt || new Date().toISOString()).toLocaleString()}</p>
+                `;
+            } else {
+                // 正常加载商家信息
+                fetch('/api/merchant', {
+                    headers: {
+                        'user-id': user.id
+                    }
+                })
+                .then(response => response.json())
+                .then(merchant => {
+                    const profileInfo = document.getElementById('profileInfo');
+                    profileInfo.innerHTML = `
+                        <p><strong>商家名称：</strong>${merchant.name}</p>
+                        <p><strong>电话：</strong>${merchant.phone}</p>
+                        <p><strong>地址：</strong>${merchant.address}</p>
+                        <p><strong>状态：</strong>${merchant.status === 'active' ? '营业中' : '已关闭'}</p>
+                        <p><strong>注册时间：</strong>${new Date(merchant.createdAt).toLocaleString()}</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('加载商家信息失败：', error);
+                    alert('加载商家信息失败，请稍后重试');
+                });
+            }
+        }
+        
+        // 状态文本转换
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '待处理',
+                'processing': '处理中',
+                'delivering': '配送中',
+                'delivered': '已送达',
+                'cancelled': '已取消'
+            };
+            return statusMap[status] || status;
+        }
+        
+        // 出餐状态文本转换
+        function getMealStatusText(mealStatus) {
+            const mealStatusMap = {
+                'not_started': '未开始',
+                'in_progress': '制作中',
+                'completed': '已完成'
+            };
+            return mealStatusMap[mealStatus] || mealStatus;
+        }
+        
+        // 初始化加载订单列表
+        loadOrders();
+        
+        // WebSocket连接，实时接收订单和配送信息
+        const socket = offlineMode ? mockSocket : io();
+        
+        // 消息提示模块
+        const messageModule = {
+            showMessage: function(type, message) {
+                const messageContainer = document.getElementById('messageContainer');
+                if (!messageContainer) {
+                    // 创建消息容器
+                    const container = document.createElement('div');
+                    container.id = 'messageContainer';
+                    container.className = 'message-container';
+                    document.body.appendChild(container);
+                }
+                
+                // 创建消息元素
+                const messageEl = document.createElement('div');
+                messageEl.className = `message message-${type}`;
+                messageEl.innerHTML = `
+                    <div class="message-content">${message}</div>
+                    <button class="message-close" onclick="this.parentElement.remove()">&times;</button>
+                `;
+                
+                // 添加到容器
+                const container = document.getElementById('messageContainer');
+                container.appendChild(messageEl);
+                
+                // 3秒后自动关闭
+                setTimeout(() => {
+                    if (messageEl.parentNode) {
+                        messageEl.remove();
+                    }
+                }, 3000);
+            },
+            showSuccess: function(message) {
+                this.showMessage('success', message);
+            },
+            showInfo: function(message) {
+                this.showMessage('info', message);
+            },
+            showWarning: function(message) {
+                this.showMessage('warning', message);
+            },
+            showError: function(message) {
+                this.showMessage('error', message);
+            }
+        };
+        
+        // 无人机地图监测模块
+        const droneMapMonitoring = {
+            map: null,
+            droneMarkers: {},
+            destinationMarkers: {},
+            
+            init: function() {
+                this.initMap();
+                this.startMonitoring();
+            },
+            
+            initMap: function() {
+                // 初始化地图
+                this.map = L.map('merchantDroneMap').setView([39.9088, 116.4044], 13);
+                
+                // 添加OpenStreetMap图层
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(this.map);
+            },
+            
+            startMonitoring: function() {
+                // 每秒更新一次无人机位置
+                setInterval(() => {
+                    this.updateDronePositions();
+                }, 1000);
+            },
+            
+            updateDronePositions: function() {
+                if (offlineMode) {
+                    // 使用模拟数据更新无人机位置
+                    const drone = mockData.drones[0];
+                    
+                    // 更新或添加无人机标记
+                    if (this.droneMarkers[drone.id]) {
+                        this.droneMarkers[drone.id].setLatLng([drone.position.lat, drone.position.lng]);
+                    } else {
+                        this.droneMarkers[drone.id] = L.marker([drone.position.lat, drone.position.lng]).addTo(this.map);
+                        this.droneMarkers[drone.id].bindPopup(`无人机 ${drone.id} (${drone.status})`).openPopup();
+                    }
+                } else {
+                    // 正常加载无人机数据
+                    fetch('/api/drones')
+                        .then(response => response.json())
+                        .then(drones => {
+                            drones.forEach(drone => {
+                                // 更新或添加无人机标记
+                                if (this.droneMarkers[drone.id]) {
+                                    this.droneMarkers[drone.id].setLatLng([drone.position.lat, drone.position.lng]);
+                                    this.droneMarkers[drone.id].bindPopup(`无人机 ${drone.id} (${drone.status})`);
+                                } else {
+                                    this.droneMarkers[drone.id] = L.marker([drone.position.lat, drone.position.lng]).addTo(this.map);
+                                    this.droneMarkers[drone.id].bindPopup(`无人机 ${drone.id} (${drone.status})`).openPopup();
+                                }
+                            });
+                        })
+                        .catch(error => {
+                            console.error('更新无人机位置失败：', error);
+                        });
+                }
+            }
+        };
+        
+        // 添加实体平台监测面板
+        function addLightSensorPanel() {
+            const container = document.querySelector('.container');
+            const panel = document.createElement('div');
+            panel.id = 'lightSensorPanel';
+            panel.className = 'drone-monitoring-panel';
+            panel.innerHTML = `
+                <h3>实体平台光敏监测</h3>
+                <div class="monitoring-content">
+                    <div class="light-sensor-info">
+                        <h4>平台状态</h4>
+                        <p>光照强度：<span id="lightIntensity">0</span></p>
+                        <p>平台状态：<span id="platformStatus">空闲</span></p>
+                        <p>是否有货物：<span id="hasCargo">否</span></p>
+                        <p>检测状态：<span id="sensorStatus">正常</span></p>
+                    </div>
+                    <div class="platform-actions">
+                        <h4>操作</h4>
+                        <p>当检测到货物时，系统会自动触发无人机配送流程</p>
+                        <p>当前出餐完成的订单会自动分配给空闲无人机</p>
+                    </div>
+                    <div class="map-container">
+                        <h4>无人机实时地图</h4>
+                        <div id="merchantDroneMap" style="height: 300px; width: 100%; border-radius: 8px;"></div>
+                    </div>
+                </div>
+            `;
+            
+            // 在main元素之前插入面板
+            const main = document.querySelector('main');
+            container.insertBefore(panel, main.nextSibling);
+            
+            // 初始化无人机地图监测
+            droneMapMonitoring.init();
+        }
+        
+        // 初始化实体平台监测面板
+        addLightSensorPanel();
+        
+        // 监听订单更新
+        socket.on('order-update', function(order) {
+            console.log('订单更新：', order);
+            loadOrders();
+        });
+        
+        // 监听配送更新
+        socket.on('delivery-update', function(update) {
+            console.log('配送更新：', update);
+            loadOrders();
+        });
+        
+        // 监听光敏传感器数据
+        socket.on('light-data', function(data) {
+            const lightIntensity = document.getElementById('lightIntensity');
+            const platformStatus = document.getElementById('platformStatus');
+            const hasCargo = document.getElementById('hasCargo');
+            const sensorStatus = document.getElementById('sensorStatus');
+            
+            if (lightIntensity) {
+                lightIntensity.textContent = data.light;
+            }
+            
+            // 判断平台状态和是否有货物
+            const cargoDetected = data.light < data.threshold;
+            
+            if (platformStatus) {
+                platformStatus.textContent = cargoDetected ? '占用' : '空闲';
+                platformStatus.className = cargoDetected ? 'shaded' : 'not-shaded';
+            }
+            
+            if (hasCargo) {
+                hasCargo.textContent = cargoDetected ? '是' : '否';
+                hasCargo.className = cargoDetected ? 'shaded' : 'not-shaded';
+            }
+            
+            if (sensorStatus) {
+                sensorStatus.textContent = '正常';
+            }
+            
+            // 如果检测到货物，发送提醒
+            if (cargoDetected) {
+                messageModule.showInfo('实体平台检测到货物，系统将自动触发无人机配送流程！');
+            }
+        });
+        
+        // 监听光照警报
+        socket.on('light-alert', function(alert) {
+            messageModule.showWarning(`光照警报：光照强度 ${alert.light} 超过阈值 ${alert.threshold}`);
+        });
+    </script>
+</body>
+</html>
